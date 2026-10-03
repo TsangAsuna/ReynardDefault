@@ -5,14 +5,23 @@
 @property (nonatomic, copy) NSURL *URL;
 @end
 
-static NSArray *const kBrowserBundleIDs = @[ 
-	@"com.apple.mobilesafari", 
-	@"org.mozilla.ios.Firefox", 
-	@"com.google.chrome.ios", 
-	@"com.brave.ios.browser" 
-]; // what else is popular...?
+// Plain C array of constant strings: an @[] literal is only a valid static
+// initializer under ARC, which some Theos toolchains don't apply here.
+static NSString *const kBrowserBundleIDs[] = {
+	@"com.apple.mobilesafari",
+	@"org.mozilla.ios.Firefox",
+	@"com.google.chrome.ios",
+	@"com.brave.ios.browser"
+}; // what else is popular...?
 static NSString *const kReynardBundleID = @"com.minh-ton.Reynard";
 static NSString *const kReynardURLScheme = @"reynard";
+
+static BOOL isRedirectTarget(NSString *bundleIdentifier) {
+	for (size_t i = 0; i < sizeof(kBrowserBundleIDs) / sizeof(kBrowserBundleIDs[0]); i++) {
+		if ([kBrowserBundleIDs[i] isEqualToString:bundleIdentifier]) return YES;
+	}
+	return NO;
+}
 
 static BOOL enabled = NO;
 
@@ -41,7 +50,7 @@ static NSURL *wrapHTTPURLForReynard(NSURL *original) {
 
 - (void)setBundleIdentifier:(NSString *)bundleIdentifier {
     loadPrefs();
-    if (enabled && [kBrowserBundleIDs containsObject:bundleIdentifier]) {
+    if (enabled && isRedirectTarget(bundleIdentifier)) {
         if ([self respondsToSelector:@selector(URL)] && [self respondsToSelector:@selector(setURL:)]) {
             NSURL *wrapped = wrapHTTPURLForReynard(self.URL);
             if (wrapped) self.URL = wrapped;
