@@ -1,60 +1,54 @@
-# ReynardDefault
+# ReynardDefaultBrowser
 
-A jailbreak tweak that redirects Safari URL opens to [Reynard](https://github.com/minh-ton/reynard-browser), a Firefox-based browser for iOS.
+**简体中文** | [English](./README_EN.md)
 
-When enabled, any link that would normally open in Safari is intercepted at the SpringBoard level and opened in Reynard instead.
+一个越狱插件：把 [Reynard](https://github.com/minh-ton/reynard-browser)（Gecko 内核的 iOS 浏览器）变成你的**默认浏览器**——本该打开 Safari 的链接会被拦截并转交给 Reynard，设置里也有开关可随时启停。
 
-> **About this fork (TsangAsuna/ReynardDefault):** the upstream preference pane crashed the Settings app on iPadOS 15.1 (tapping the ReynardDefault entry killed Settings, making it impossible to configure). This fork removes the preference **bundle** entirely and ships the toggle as a native inline switch in the Settings list instead — tapping it no longer loads any bundle, so the crash path is gone. Same redirect mechanism, same preference suite (`enabled` in `com.guacforlife.reynarddefaultprefs`), same Control Centre toggle. Install v1.5.1+ to upgrade over upstream (same package id).
+本仓库是 [guacforlife/ReynardDefault](https://github.com/guacforlife/ReynardDefault) 的 fork，**修复了上游在 iPadOS 15.x 上"设置里点进去就闪退、无法配置"的问题**（修复已提交上游：[PR #10](https://github.com/guacforlife/ReynardDefault/pull/10)）。
 
-## Features
+## 功能
 
-- **Safari redirect** — hooks `FBSystemServiceOpenApplicationRequest` in SpringBoard to swap the bundle identifier
-- **Settings toggle** — a crash-proof inline `PSSwitchCell` in the main Settings list (no preference bundle, nothing to load when tapped)
-- **Control Centre toggle** — quick toggle via CCSupport module (optional)
+- **Safari 重定向** — hook SpringBoard 的 `FBSystemServiceOpenApplicationRequest`，把 Safari（及 Firefox / Chrome / Brave）的打开请求换成 Reynard
+- **设置开关** — PreferenceLoader 内联开关，直接显示在设置主列表。没有 preference bundle，点开不加载任何代码，从物理上消除了闪退路径
+- **控制中心开关** — 通过 CCSupport 快捷启停（可选）
 
-## Requirements
+## 适配情况
 
-- A jailbroken iOS device — supports **rootless** (Dopamine/Roothide) and **rootful** (unc0ver, palera1n rootful)
-- [Reynard](https://github.com/minh-ton/reynard-browser) browser installed
-- [PreferenceLoader](https://github.com/PoomSmart/PreferenceLoader) (for the Settings switch)
-- [CCSupport](https://moreinfo.thebigboss.org/moreinfo/depiction.php?file=ccsupportDp) (optional, only for the Control Centre toggle)
+- 部署目标 **iOS 14.0+**；rootless / rootful 双变体；arm64 / arm64e
+- 被 hook 的 API 存在于 iOS 13–16；内联开关在所有支持 PreferenceLoader 的系统上都能正常渲染——包括让上游 bundle 闪退的 iPadOS 分屏设置
+- **实测通过：iPad Pro (2021) · iPadOS 15.1 · rootless** ✅（上游 1.5.0 在此环境点击即崩）
 
-## Installing
+| 设备 | 系统 | 越狱 | 变体 | 状态 |
+|------|------|------|------|------|
+| iPad Pro (2021) | iPadOS 15.1 | rootless | rootless (`iphoneos-arm64`) | ✅ 正常（上游在该环境闪退） |
+| iPhone 14 Pro Max | 16.3.1 | Dopamine (Roothide) | rootless (`iphoneos-arm64`) | 正常（上游实测） |
+| iPhone 7 | 15.7.7 | Dopamine | rootless (`iphoneos-arm64`) | 正常（上游实测） |
+| iPhone 7 Plus | 14.8.1 | Taurine 1.1.7-3 | rootful (`iphoneos-arm`) | 正常（上游实测） |
 
-Grab the deb for your jailbreak scheme from [Releases](https://github.com/TsangAsuna/ReynardDefault/releases):
+> 💡 **装之前先看这里**：Reynard 的越狱版 / TrollStore 版 ipa 已内置 `com.apple.developer.web-browser` 权限，部分系统版本的 **设置 → Safari → 默认浏览器 App** 会原生列出 Reynard——如果列表里有，直接选即可，无需本插件。
 
-- `*_iphoneos-arm64.deb` — rootless (Dopamine, Roothide, palera1n rootless)
-- `*_iphoneos-arm.deb` — rootful (unc0ver, palera1n rootful, Taurine)
+## 安装
 
-> **Bonus:** Reynard's Jailbroken/TrollStore builds already ship the `com.apple.developer.web-browser` entitlement. On some iOS versions this alone makes Reynard appear in *Settings → Safari → Default Browser App*. Check there first — if Reynard is listed, you can set it natively and may not need this tweak at all.
+从 [Releases](https://github.com/TsangAsuna/ReynardDefaultBrowser/releases) 下载对应你越狱方案的 deb：
 
-## Building
+- `*_iphoneos-arm64_rootless.deb` — rootless（Dopamine / Roothide / palera1n rootless）
+- `*_iphoneos-arm_rootful.deb` — rootful（unc0ver / palera1n rootful / Taurine）
 
-Requires [Theos](https://theos.dev/).
+与上游同包名（`com.guacforlife.reynarddefault`）且版本更高，可**直接覆盖升级**，原有开关状态保留。安装后在设置主列表找到 "ReynardDefault" 开关打开即可。
+
+## 编译
+
+需要 [Theos](https://theos.dev/)：
 
 ```bash
 export THEOS=~/theos
-cd ReynardDefault
 make rootless   # Dopamine / Roothide
 make rootful    # unc0ver / palera1n rootful
-make both       # builds both variants side-by-side
+make both       # 两种一起构建
 ```
 
-Builds land in `packages/` as `*_iphoneos-arm64.deb` (rootless) and `*_iphoneos-arm.deb` (rootful). Rootless debs installed via Sileo on Roothide are auto-patched; manual installs need the Roothide Patcher app first.
+GitHub Actions 会在每次 push 时自动构建两种 deb，打 tag 时自动发布 Release。
 
-GitHub Actions builds both variants automatically on every push (see `.github/workflows/build.yml`).
+## 许可证
 
-## Tested Environments
-
-| Device | iOS | Jailbreak | Variant | Status |
-|--------|-----|-----------|---------|--------|
-| iPhone 14 Pro Max | 16.3.1 | Dopamine (Roothide) | rootless (`iphoneos-arm64`) | Working |
-| iPhone 7 | 15.7.7 | Dopamine | rootless (`iphoneos-arm64`) | Working |
-| iPhone 7 Plus | 14.8.1 | Taurine 1.1.7-3 | rootful (`iphoneos-arm`) | Working |
-| iPad (split-view Settings) | 15.1 | rootless | rootless (`iphoneos-arm64`) | Settings crash fixed in v1.5.1 (upstream crashed on tap) |
-
-Tweak injection via ElleKit (rootless) or substrate (rootful) on arm64 / arm64e.
-
-## License
-
-This project is licensed under the GNU General Public License v3.0. See [LICENSE](LICENSE) for details.
+GPL-3.0，详见 [LICENSE](LICENSE)。原始 tweak 由 [guacforlife](https://github.com/guacforlife) 开发。
