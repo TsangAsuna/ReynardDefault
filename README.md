@@ -10,7 +10,10 @@
 
 - **Safari 重定向** — hook SpringBoard 的 `FBSystemServiceOpenApplicationRequest`，把 Safari（及 Firefox / Chrome / Brave）的打开请求换成 Reynard
 - **设置开关** — PreferenceLoader 内联开关，直接显示在设置主列表。没有 preference bundle，点开不加载任何代码，从物理上消除了闪退路径
-- **控制中心开关** — 通过 CCSupport 快捷启停（可选）
+- **按浏览器独立开关** — 总开关之外，Safari / Chrome / Firefox / Brave 各有独立开关，可以选择哪些浏览器的链接跳转 Reynard。某些 App 依赖 Chrome/Safari 打开链接（如 OAuth 登录跳转）时，把对应浏览器的重定向关掉即可
+- **控制中心开关** — 通过 CCSupport 快捷启停（可选，控制总开关）
+
+设置里共 5 个开关，实际重定向条件 = 总开关开启 **且** 对应浏览器开关开启。默认：Safari 重定向开启，Chrome / Firefox / Brave 关闭。
 
 ## 适配情况
 

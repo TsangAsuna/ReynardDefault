@@ -8,9 +8,12 @@ This repository is a fork of [guacforlife/ReynardDefault](https://github.com/gua
 
 ## Features
 
-- **Safari redirect** — hooks `FBSystemServiceOpenApplicationRequest` in SpringBoard to swap open requests from Safari (and Firefox / Chrome / Brave) to Reynard
-- **Settings toggle** — an inline `PSSwitchCell` in the main Settings list via PreferenceLoader. There is no preference bundle, so tapping the entry loads no code at all — the crash path is physically gone
-- **Control Centre toggle** — quick on/off via CCSupport (optional)
+- **Safari redirect** — hooks `FBSystemServiceOpenApplicationRequest` in SpringBoard to swap open requests to Reynard
+- **Per-browser switches** — besides the master switch, Safari / Chrome / Firefox / Brave each get their own switch, so you choose which browsers' links redirect to Reynard. If an app depends on Chrome or Safari opening links (e.g. OAuth sign-in hand-offs), just turn off that browser's redirect
+- **Settings toggle** — inline `PSSwitchCell` entries in the main Settings list via PreferenceLoader. There is no preference bundle, so nothing loads when toggled — the crash path is physically gone
+- **Control Centre toggle** — quick on/off via CCSupport (optional, controls the master switch)
+
+The Settings list shows 5 switches; a redirect happens only when the master switch **and** the browser's own switch are both on. Defaults: Safari redirect on; Chrome / Firefox / Brave off.
 
 ## Compatibility
 
