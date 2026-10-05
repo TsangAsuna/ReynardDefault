@@ -1,14 +1,20 @@
 # ReynardDefault
 
-A jailbreak tweak that redirects Safari URL opens to [Reynard](https://github.com/minh-ton/reynard-browser), a Firefox-based browser for iOS.
+A jailbreak tweak that redirects web links to [Reynard](https://github.com/minh-ton/reynard-browser), a Firefox-based browser for iOS, so it can be used as the default browser.
 
-When enabled, any link that would normally open in Safari is intercepted at the SpringBoard level and opened in Reynard instead.
+When enabled, every http(s) link an app hands to a browser is opened in Reynard instead, while the browsers themselves stay launchable.
 
 ## Features
 
-- **Safari redirect** — hooks `FBSystemServiceOpenApplicationRequest` in SpringBoard to swap the bundle identifier
-- **Settings toggle** — inline switch in the main Settings list via PreferenceLoader (no preference bundle, so nothing to load and crash when the entry is tapped)
+- **Global web-link redirect** — every http(s) link opened by any app goes to Reynard (`Redirect All Web Links` switch, on by default)
+- **Browsers stay launchable** — plain browser launches (icon taps) are detected via the open request's options payload (no `__PayloadURL` entry) and restored to the original browser
+- **Per-app redirect sources** — `redirect.<bundle id>` keys in the `com.guacforlife.reynarddefaultprefs` suite add redirect sources for any app (Safari is the default source; our Reynard fork ships a picker UI for these keys)
+- **Settings toggles** — inline switches in the main Settings list via PreferenceLoader (no preference bundle, so nothing to load and crash when the entry is tapped)
 - **Control Centre toggle** — quick toggle via CCSupport module
+
+### How the redirect works
+
+`FBSystemServiceOpenApplicationRequest` (FrontBoard) has no URL property; the web link of an open travels in the options payload under the literal key `__PayloadURL` (`FBSOpenApplicationOptionKeyPayloadURL`). The tweak swaps the requested bundle identifier for Reynard's and leaves the payload untouched, so Reynard receives the original URL directly. When the payload turns out to carry no web link (a plain launch), the original target is restored.
 
 ## Requirements
 
