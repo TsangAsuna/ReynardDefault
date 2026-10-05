@@ -8,12 +8,12 @@
 
 ## 功能
 
-- **Safari 重定向** — hook SpringBoard 的 `FBSystemServiceOpenApplicationRequest`，把被选中的浏览器的打开请求换成 Reynard
-- **按 App 自定义跳转来源** — 在 Reynard 应用内 **设置 → 通用 → Default Browser Redirect** 中勾选任意已安装应用（含巨魔安装的）：被勾选的 App 打开网页链接时会跳转到 Reynard。某些 App 依赖浏览器跳转（如 OAuth 登录）时，取消勾选该 App 即可恢复
-- **快捷开关** — 系统设置主列表里有总开关 + Safari / Chrome / Firefox / Brave 四个独立开关（与应用内勾选的是同一份数据）
+- **全局网页跳转** — 开启后，任何 App 打开的 http(s) 网页链接都跳转到 Reynard
+- **浏览器本体不受影响** — 只有带网页链接的打开请求会被劫持；点击 Safari / Chrome 等图标、纯启动浏览器的行为一律放行，随时能打开浏览器本体
+- **按 App 自定义（可选）** — 关闭"全局跳转"后，可在 Reynard 应用内 **设置 → 通用 → Default Browser Redirect** 按应用勾选跳转来源（含巨魔安装的应用）；某些 App 依赖浏览器跳转（如 OAuth 登录）时用这个模式排除它们
 - **控制中心开关** — 通过 CCSupport 快捷启停（可选，控制总开关）
 
-实际重定向条件 = 总开关开启 **且** 链接来源 App 被勾选 **且** 链接是 http(s)。非 http(s) 的应用深链不受影响。默认只勾选 Safari。
+设置主列表共 2 个开关：**ReynardDefault**（总开关，默认关）与 **Redirect All Web Links**（全局跳转，默认开）。只有总开关开、链接为 http(s) 时才会跳转。
 
 ## 适配情况
 

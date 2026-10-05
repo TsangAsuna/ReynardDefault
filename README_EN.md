@@ -8,12 +8,12 @@ This repository is a fork of [guacforlife/ReynardDefault](https://github.com/gua
 
 ## Features
 
-- **Safari redirect** — hooks `FBSystemServiceOpenApplicationRequest` in SpringBoard to swap open requests to Reynard
-- **Per-app redirect sources** — in Reynard's own settings (**Settings → General → Default Browser Redirect**), check any installed app (TrollStore installs included): that app's web link opens go to Reynard. If an app depends on browser hand-offs (e.g. OAuth sign-ins), just uncheck it
-- **Quick switches** — the system Settings list shows the master switch plus individual Safari / Chrome / Firefox / Brave switches (they edit the same data as the in-app picker)
+- **Global web redirect** — when on, every http(s) web link opened by any app goes to Reynard
+- **Browsers stay launchable** — only open requests that actually carry a web link are hijacked; tapping the Safari/Chrome icon or otherwise launching a browser without a link always opens the real browser
+- **Per-app sources (optional)** — turn off the global switch and pick redirect sources per app in Reynard's own settings (**Settings → General → Default Browser Redirect**, TrollStore installs included); use this to exclude apps that rely on browser hand-offs such as OAuth sign-ins
 - **Control Centre toggle** — quick on/off via CCSupport (optional, controls the master switch)
 
-A redirect happens only when the master switch is on **and** the link's source app is checked **and** the link is http(s). Non-web app deep links are never touched. Safari is checked by default.
+The system Settings list shows 2 switches: **ReynardDefault** (master, off by default) and **Redirect All Web Links** (global mode, on by default). A redirect happens only while the master switch is on and the link is http(s).
 
 ## Compatibility
 
